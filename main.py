@@ -1,9 +1,23 @@
+from pathlib import Path
+import time
 from urllib.parse import urlsplit, urlunsplit
 
 import requests
 
 # Загрузи cookies из твоего браузера (экспортированные в Netscape-формате)
 cookies_path = "cookies.txt"
+progress_path = Path("progress.txt")
+refresh_interval = 60 * 60
+
+
+def load_start_id():
+    if not progress_path.exists():
+        return 69981
+    return int(progress_path.read_text(encoding="utf-8").strip())
+
+
+def save_next_id(next_id):
+    progress_path.write_text(str(next_id), encoding="utf-8")
 
 session = requests.Session()
 session.headers.update({
@@ -38,7 +52,15 @@ def load_cookies(session, path):
 
 load_cookies(session, cookies_path)
 
-for i in range(50000, 200001):
+last_cookie_refresh = time.monotonic()
+
+for i in range(load_start_id(), 200001):
+    if time.monotonic() - last_cookie_refresh >= refresh_interval:
+        session.cookies.clear()
+        load_cookies(session, cookies_path)
+        last_cookie_refresh = time.monotonic()
+        print("Cookies перезагружены из cookies.txt")
+
     url = f"https://lms.mtuci.ru/pluginfile.php/{i}/user/icon/mtuci/f3?rev=8875864"
 
     resp = session.get(url, allow_redirects=True)
@@ -51,8 +73,9 @@ for i in range(50000, 200001):
 
     try:
         resp.raise_for_status()
-    except Exception as e:
+    except requests.RequestException:
         print(f"Пропускаю {i}")
+        save_next_id(i + 1)
         continue
 
     content_type = resp.headers.get("Content-Type", "")
@@ -60,6 +83,9 @@ for i in range(50000, 200001):
         if "/theme/image.php/" in resp.url:
             print("Сессия принята, но у пользователя нет доступного фото.")
             print("Moodle отдал стандартную иконку:", safe_url(resp.url))
+            break
+        else:
+            save_next_id(i + 1)
         with open(f"pics/{i}.png", "wb") as f:
             f.write(resp.content)
         print(f"Сохранено {i}.png")
