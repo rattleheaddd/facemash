@@ -5,7 +5,9 @@
 *.txt
 *.png
 *.jpg
+*.rar
 *.keras
 *.ipynb
 *.h5
 *.onnx
+*.html

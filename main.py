@@ -54,7 +54,7 @@ load_cookies(session, cookies_path)
 
 last_cookie_refresh = time.monotonic()
 
-for i in range(load_start_id(), 200001):
+for i in range(load_start_id(), 300001):
     if time.monotonic() - last_cookie_refresh >= refresh_interval:
         session.cookies.clear()
         load_cookies(session, cookies_path)

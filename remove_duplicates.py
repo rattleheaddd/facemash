@@ -1,7 +1,7 @@
 from pathlib import Path
 import hashlib
 
-folder = Path("pics")
+folder = Path("women")
 seen = {}
 
 for file_path in folder.iterdir():
