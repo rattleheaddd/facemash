@@ -84,13 +84,13 @@ for i in range(load_start_id(), 200001):
             print("Сессия принята, но у пользователя нет доступного фото.")
             print("Moodle отдал стандартную иконку:", safe_url(resp.url))
             break
-        else:
-            save_next_id(i + 1)
+        save_next_id(i + 1)
         with open(f"pics/{i}.png", "wb") as f:
             f.write(resp.content)
         print(f"Сохранено {i}.png")
     else:
         print("Сессия не подтверждена: сервер вернул не изображение, а:", content_type)
         print("URL:", safe_url(resp.url))
-        if resp.history:
-            print("Последний редирект:", safe_url(resp.history[-1].headers.get("Location", "")))
+        break
+        # if resp.history:
+        #     print("Последний редирект:", safe_url(resp.history[-1].headers.get("Location", "")))

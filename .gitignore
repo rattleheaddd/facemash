@@ -2,4 +2,10 @@
 /pics
 /__pycache__
 /roflpics
-/*.txt
+*.txt
+*.png
+*.jpg
+*.keras
+*.ipynb
+*.h5
+*.onnx
